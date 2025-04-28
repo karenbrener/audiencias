@@ -3,8 +3,9 @@ import React from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 interface Column<T> {
-  accessorKey: keyof T | string; // Allow string for non-direct properties like 'actions'
-  header: string;
+  accessorKey?: keyof T | string; // Make accessorKey optional
+  id?: string; // Add id as an alternative identifier
+  header: string | ((props: any) => React.ReactNode); // Allow header to be a render function
   cell?: (item: { row: { original: T } }) => React.ReactNode;
 }
 
@@ -27,7 +28,11 @@ export function DataTable<T extends { id: string | number }>({
         <TableHeader>
           <TableRow>
             {columns.map((column) => (
-              <TableHead key={column.accessorKey as string}>{column.header}</TableHead>
+              <TableHead key={column.id || column.accessorKey as string}>
+                {typeof column.header === 'function' 
+                  ? column.header({ table: {} }) 
+                  : column.header}
+              </TableHead>
             ))}
           </TableRow>
         </TableHeader>
@@ -48,10 +53,12 @@ export function DataTable<T extends { id: string | number }>({
                 }`}
               >
                 {columns.map((column) => (
-                  <TableCell key={`${item.id}-${column.accessorKey as string}`}>
+                  <TableCell key={`${item.id}-${column.id || column.accessorKey as string}`}>
                     {column.cell 
                       ? column.cell({ row: { original: item } }) 
-                      : String(item[column.accessorKey as keyof T] || '')}
+                      : column.accessorKey 
+                        ? String(item[column.accessorKey as keyof T] || '')
+                        : ''}
                   </TableCell>
                 ))}
               </TableRow>
