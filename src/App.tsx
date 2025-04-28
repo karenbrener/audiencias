@@ -9,6 +9,7 @@ import NotFound from "./pages/NotFound";
 import AppLayout from "./components/layout/AppLayout";
 import AudienciasIndex from "./pages/audiencias/AudienciasIndex";
 import AudienciasConstructor from "./pages/audiencias/AudienciasConstructor";
+import CampanasIndex from "./pages/campanas/CampanasIndex";
 
 const queryClient = new QueryClient();
 
@@ -22,6 +23,7 @@ const App = () => (
           <Route path="/" element={<AppLayout><Index /></AppLayout>} />
           <Route path="/audiencias" element={<AppLayout><AudienciasIndex /></AppLayout>} />
           <Route path="/audiencias/constructor" element={<AppLayout><AudienciasConstructor /></AppLayout>} />
+          <Route path="/campanas" element={<AppLayout><CampanasIndex /></AppLayout>} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
