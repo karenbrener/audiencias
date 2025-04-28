@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,7 +18,6 @@ import CampanasSidePanel from '@/components/campanas/CampanasSidePanel';
 import CreateCampanaModal from '@/components/campanas/CreateCampanaModal';
 import { toast } from 'sonner';
 
-// Mock data
 const mockAudiences: Audience[] = [
   {
     id: 'aud1',
@@ -208,7 +206,7 @@ const CampanasIndex = () => {
                 <SelectValue placeholder="Audiencia" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todas las audiencias</SelectItem>
+                <SelectItem value="all">Todas las audiencias</SelectItem>
                 {mockAudiences.map(audience => (
                   <SelectItem key={audience.id} value={audience.id}>
                     {audience.name}
@@ -232,7 +230,7 @@ const CampanasIndex = () => {
                 <SelectValue placeholder="Estado" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todos los estados</SelectItem>
+                <SelectItem value="all">Todos los estados</SelectItem>
                 <SelectItem value="scheduled">Programadas</SelectItem>
                 <SelectItem value="in-progress">En curso</SelectItem>
                 <SelectItem value="completed">Finalizadas</SelectItem>
