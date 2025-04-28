@@ -10,6 +10,7 @@ import AppLayout from "./components/layout/AppLayout";
 import AudienciasIndex from "./pages/audiencias/AudienciasIndex";
 import AudienciasConstructor from "./pages/audiencias/AudienciasConstructor";
 import CampanasIndex from "./pages/campanas/CampanasIndex";
+import ContactosIndex from "./pages/contactos/ContactosIndex";
 
 const queryClient = new QueryClient();
 
@@ -24,7 +25,7 @@ const App = () => (
           <Route path="/audiencias" element={<AppLayout><AudienciasIndex /></AppLayout>} />
           <Route path="/audiencias/constructor" element={<AppLayout><AudienciasConstructor /></AppLayout>} />
           <Route path="/campanas" element={<AppLayout><CampanasIndex /></AppLayout>} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          <Route path="/contactos" element={<AppLayout><ContactosIndex /></AppLayout>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
