@@ -3,9 +3,9 @@ import React from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 interface Column<T> {
-  accessorKey: keyof T;
+  accessorKey: keyof T | string; // Allow string for non-direct properties like 'actions'
   header: string;
-  cell?: (item: T) => React.ReactNode;
+  cell?: (item: { row: { original: T } }) => React.ReactNode;
 }
 
 interface DataTableProps<T> {
@@ -49,7 +49,9 @@ export function DataTable<T extends { id: string | number }>({
               >
                 {columns.map((column) => (
                   <TableCell key={`${item.id}-${column.accessorKey as string}`}>
-                    {column.cell ? column.cell(item) : String(item[column.accessorKey])}
+                    {column.cell 
+                      ? column.cell({ row: { original: item } }) 
+                      : String(item[column.accessorKey as keyof T] || '')}
                   </TableCell>
                 ))}
               </TableRow>

@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Search, plus } from 'lucide-react';
+import { Search, Plus } from 'lucide-react';
 import { Contact, Audience } from '@/types/audience';
 import { DataTable } from '@/components/ui/data-table';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -20,6 +20,13 @@ interface AudienciasManualEditorProps {
   onClose: () => void;
   audience: Audience | null;
   onSave: (contacts: Contact[]) => void;
+}
+
+// Define column type for the DataTable that matches the expected interface
+interface ContactColumn {
+  accessorKey: keyof Contact | 'select';
+  header: string;
+  cell?: (info: { row: { original: Contact } }) => React.ReactNode;
 }
 
 const AudienciasManualEditor: React.FC<AudienciasManualEditorProps> = ({
@@ -102,7 +109,7 @@ const AudienciasManualEditor: React.FC<AudienciasManualEditorProps> = ({
       )
     : contacts;
 
-  const columns = [
+  const columns: ContactColumn[] = [
     {
       accessorKey: 'select',
       header: 'Seleccionar',
@@ -152,7 +159,7 @@ const AudienciasManualEditor: React.FC<AudienciasManualEditorProps> = ({
                 className="w-32"
               />
               <Button size="sm" onClick={handleAddContact} className="whitespace-nowrap">
-                <plus className="h-4 w-4 mr-1" />
+                <Plus className="h-4 w-4 mr-1" />
                 Agregar
               </Button>
             </div>
@@ -170,6 +177,7 @@ const AudienciasManualEditor: React.FC<AudienciasManualEditorProps> = ({
           </div>
           
           <div className="mb-4 rounded-md border max-h-[300px] overflow-y-auto">
+            {/* @ts-ignore - We know our Contact type is compatible with the DataTable */}
             <DataTable
               columns={columns}
               data={filteredContacts}

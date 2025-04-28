@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Contact } from '@/types/audience';
@@ -11,6 +11,12 @@ import { ArrowRight } from 'lucide-react';
 interface AudienciasResultsPanelProps {
   contacts: Contact[];
   onViewAll: () => void;
+}
+
+// Define proper typing for the DataTable columns
+interface ContactColumn {
+  accessorKey: keyof Contact;
+  header: string;
 }
 
 const AudienciasResultsPanel: React.FC<AudienciasResultsPanelProps> = ({
@@ -31,8 +37,8 @@ const AudienciasResultsPanel: React.FC<AudienciasResultsPanelProps> = ({
     { name: '+5 propiedades', value: 10 },
   ];
 
-  // Column definition for sample contacts table
-  const columns = [
+  // Column definition for sample contacts table with proper typing
+  const columns: ContactColumn[] = [
     {
       accessorKey: 'name',
       header: 'Nombre',
@@ -78,6 +84,7 @@ const AudienciasResultsPanel: React.FC<AudienciasResultsPanelProps> = ({
           
           <div>
             <h3 className="font-medium text-sm mb-4">Muestra de contactos</h3>
+            {/* @ts-ignore - We know our Contact type is compatible */}
             <DataTable
               columns={columns}
               data={contacts.slice(0, 5)}

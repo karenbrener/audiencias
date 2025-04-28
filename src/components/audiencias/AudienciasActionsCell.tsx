@@ -3,7 +3,7 @@ import React from 'react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { Audience } from '@/types/audience';
-import { edit, copy, trash, ArrowRight, ArrowDown } from 'lucide-react';
+import { Edit, Copy, Trash, ArrowRight, ArrowDown } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface AudienciasActionsCellProps {
@@ -37,7 +37,7 @@ const AudienciasActionsCell: React.FC<AudienciasActionsCellProps> = ({
         onClick={() => onEdit(audience)}
         title="Editar"
       >
-        <edit className="h-4 w-4" />
+        <Edit className="h-4 w-4" />
       </Button>
       <Button
         variant="ghost"
@@ -45,7 +45,7 @@ const AudienciasActionsCell: React.FC<AudienciasActionsCellProps> = ({
         onClick={handleClone}
         title="Clonar"
       >
-        <copy className="h-4 w-4" />
+        <Copy className="h-4 w-4" />
       </Button>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>

@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { plus } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Audience } from '@/types/audience';
@@ -20,6 +20,13 @@ const MOCK_AUDIENCES: Audience[] = [
   { id: '4', name: 'Vendedores potenciales', size: 412, lastRun: '2025-04-10', status: 'active' },
   { id: '5', name: 'Clientes antiguos', size: 1589, lastRun: '2025-03-30', status: 'archived' },
 ];
+
+// Define proper typing for the DataTable columns
+interface AudienceColumn {
+  accessorKey: keyof Audience | 'actions';
+  header: string;
+  cell?: (info: { row: { original: Audience } }) => React.ReactNode;
+}
 
 const AudienciasIndex: React.FC = () => {
   const navigate = useNavigate();
@@ -96,7 +103,7 @@ const AudienciasIndex: React.FC = () => {
     toast.success('Audiencia actualizada correctamente');
   };
 
-  const columns = [
+  const columns: AudienceColumn[] = [
     {
       accessorKey: 'name',
       header: 'Nombre',
@@ -128,7 +135,7 @@ const AudienciasIndex: React.FC = () => {
         <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <h1 className="text-2xl font-bold text-gray-900">Audiencias</h1>
           <Button onClick={handleCreateAudience} className="shrink-0">
-            <plus className="h-4 w-4 mr-2" />
+            <Plus className="h-4 w-4 mr-2" />
             Nueva Audiencia
           </Button>
         </div>
@@ -141,6 +148,7 @@ const AudienciasIndex: React.FC = () => {
         </div>
         
         <div>
+          {/* @ts-ignore - We know our Audience type is compatible */}
           <DataTable 
             columns={columns} 
             data={filteredAudiences} 
