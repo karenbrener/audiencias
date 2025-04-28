@@ -162,9 +162,9 @@ const CreateCampanaModal: React.FC<CreateCampanaModalProps> = ({
                 <div className="bg-gray-50 p-3 rounded-md">
                   <p className="text-sm mb-2 font-medium">Vista previa:</p>
                   <div className="bg-white border border-gray-200 rounded-lg p-3 text-sm">
-                    <p>Hola <span className="bg-yellow-100 px-1">{{nombre}}</span>,</p>
+                    <p>Hola <span className="bg-yellow-100 px-1">{"{{nombre}}"}</span>,</p>
                     <p className="my-1">Gracias por ser parte de nuestra comunidad. Tenemos una oferta especial para ti.</p>
-                    <p>Contacta con nosotros al <span className="bg-yellow-100 px-1">{{telefono}}</span>.</p>
+                    <p>Contacta con nosotros al <span className="bg-yellow-100 px-1">{"{{telefono}}"}</span>.</p>
                   </div>
                 </div>
               )}
