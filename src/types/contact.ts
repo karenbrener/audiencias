@@ -9,6 +9,9 @@ export interface Contact {
   tags: string[];
   avatar?: string;
   notes?: string;
+  lastCampaign?: string;
+  status?: string;
+  createdAt?: string;
 }
 
 export type AgeRange = '20-35' | '35-50' | '50-70' | '70+';
@@ -20,4 +23,10 @@ export interface ContactFilters {
   ageRanges?: AgeRange[];
   propertyRanges?: PropertiesRange[];
   neighborhoods?: string[];
+  status?: string;
+  tags?: string[];
+  lastCampaignFrom?: string;
+  lastCampaignTo?: string;
+  createdFrom?: string;
+  createdTo?: string;
 }

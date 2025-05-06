@@ -12,6 +12,7 @@ import ContactosTags from '@/components/contactos/ContactosTags';
 import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
 
+// Updated mock data with new fields
 const mockContacts: Contact[] = [
   {
     id: 'cont1',
@@ -21,6 +22,9 @@ const mockContacts: Contact[] = [
     properties: 3,
     neighborhood: 'Salamanca',
     tags: ['Activo', 'Inversor'],
+    lastCampaign: '2023-04-15',
+    status: 'Activo',
+    createdAt: '2022-11-20',
   },
   {
     id: 'cont2',
@@ -30,6 +34,9 @@ const mockContacts: Contact[] = [
     properties: 6,
     neighborhood: 'Chamberí',
     tags: ['Excliente', 'Herencia'],
+    lastCampaign: '2023-03-02',
+    status: 'Inactivo',
+    createdAt: '2022-09-05',
   },
 ];
 
@@ -54,6 +61,9 @@ const ContactosIndex = () => {
     const newContact = {
       ...contact,
       id: `cont${contacts.length + 1}`,
+      lastCampaign: '-',
+      status: 'Activo',
+      createdAt: new Date().toISOString().split('T')[0],
     };
     setContacts([...contacts, newContact]);
     setIsCreateModalOpen(false);
@@ -66,6 +76,7 @@ const ContactosIndex = () => {
     toast.success('Contacto eliminado correctamente');
   };
 
+  // Enhanced columns with new data fields
   const columns = [
     {
       id: 'select',
@@ -103,11 +114,32 @@ const ContactosIndex = () => {
       header: 'Barrio',
     },
     {
+      accessorKey: 'lastCampaign',
+      header: 'Última campaña',
+    },
+    {
+      accessorKey: 'status',
+      header: 'Estado',
+      cell: ({ row }: { row: { original: Contact } }) => (
+        <div className={`px-2 py-1 rounded-full text-xs font-medium inline-block
+          ${row.original.status === 'Activo' 
+            ? 'bg-green-100 text-green-800' 
+            : 'bg-gray-100 text-gray-800'}`}
+        >
+          {row.original.status}
+        </div>
+      ),
+    },
+    {
       accessorKey: 'tags',
       header: 'Etiquetas',
       cell: ({ row }: { row: { original: Contact } }) => (
         <ContactosTags tags={row.original.tags} />
       ),
+    },
+    {
+      accessorKey: 'createdAt',
+      header: 'Fecha creación',
     },
     {
       id: 'actions',
