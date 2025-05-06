@@ -1,96 +1,153 @@
 
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Campaign } from '@/types/campaign';
-import { NavLink } from 'react-router-dom';
-import { Eye, X } from 'lucide-react';
+import { ArrowLeft, Copy, MessageSquare, History } from 'lucide-react';
+import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table';
 
 interface CampanasSidePanelProps {
   campaign: Campaign | null;
-  isOpen?: boolean;
-  onToggle?: () => void;
+  isOpen: boolean;
+  onToggle: () => void;
 }
 
-const CampanasSidePanel: React.FC<CampanasSidePanelProps> = ({ 
-  campaign, 
-  isOpen = true,
-  onToggle = () => {}
+const CampanasSidePanel: React.FC<CampanasSidePanelProps> = ({
+  campaign,
+  isOpen,
+  onToggle,
 }) => {
-  if (!campaign) {
-    return (
-      <div className="h-full flex items-center justify-center text-muted-foreground p-4">
-        <p className="text-center">Selecciona una campaña para ver sus detalles</p>
-      </div>
-    );
+  if (!isOpen || !campaign) {
+    return null;
   }
 
-  const formatDate = (dateString: string) => {
-    const options: Intl.DateTimeFormatOptions = { 
-      day: '2-digit', 
-      month: 'long', 
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    };
-    return new Date(dateString).toLocaleDateString('es-ES', options);
+  // Mock data for campaign details
+  const campaignMetrics = {
+    sent: 1245,
+    delivered: 1230,
+    failed: 15,
+    read: 987,
+    readRate: '80.2%',
+    responses: 145,
+    responseRate: '11.8%',
+    messageText: 'Hola [nombre], tenemos nuevas propiedades disponibles en tu zona que podrían interesarte. ¿Te gustaría agendar una cita? Responde a este mensaje o llámanos.',
+    lastEdited: '2025-05-01 18:32',
+    editHistory: [
+      { date: '2025-05-01 18:32', user: 'Admin', action: 'Actualización de texto' },
+      { date: '2025-05-01 15:45', user: 'Admin', action: 'Creación de campaña' }
+    ]
+  };
+
+  const handleDuplicate = () => {
+    // In a real app, this would duplicate the campaign
+    console.log('Duplicating campaign:', campaign.id);
   };
 
   return (
-    <div className="p-4 space-y-4">
-      {isOpen && (
-        <div className="flex justify-end mb-2">
-          <Button variant="ghost" size="icon" onClick={onToggle} title="Cerrar panel">
-            <X className="h-4 w-4" />
+    <div className="w-[400px] border-l bg-background h-screen overflow-y-auto p-6">
+      <div className="mb-6">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="mb-2"
+          onClick={onToggle}
+        >
+          <ArrowLeft className="h-4 w-4 mr-1" />
+          Volver al listado
+        </Button>
+        <h2 className="text-2xl font-bold">{campaign.name}</h2>
+      </div>
+
+      <div className="space-y-6">
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg">Detalles Completos</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableBody>
+                <TableRow>
+                  <TableCell className="font-medium">Audiencia</TableCell>
+                  <TableCell>{campaign.audienceName}</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell className="font-medium">Tamaño de audiencia</TableCell>
+                  <TableCell>{campaign.audienceSize || '-'}</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell className="font-medium">Fecha programada</TableCell>
+                  <TableCell>{campaign.scheduledDate}</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell className="font-medium">Estado</TableCell>
+                  <TableCell>
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium 
+                      ${campaign.status === 'sent' ? 'bg-green-100 text-green-800' : 
+                        campaign.status === 'scheduled' ? 'bg-blue-100 text-blue-800' : 
+                        'bg-gray-100 text-gray-800'}`}>
+                      {campaign.status === 'sent' ? 'Enviado' : 
+                       campaign.status === 'scheduled' ? 'Programado' : 
+                       campaign.status === 'canceled' ? 'Cancelado' : campaign.status}
+                    </span>
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell className="font-medium">Envíos</TableCell>
+                  <TableCell>{campaignMetrics.delivered} exitosos / {campaignMetrics.failed} fallidos</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell className="font-medium">Tasa de lectura</TableCell>
+                  <TableCell>{campaignMetrics.readRate} ({campaignMetrics.read} leídos)</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell className="font-medium">Tasa de respuesta</TableCell>
+                  <TableCell>{campaignMetrics.responseRate} ({campaignMetrics.responses} respuestas)</TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg">Mensaje enviado</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm">{campaignMetrics.messageText}</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg">Historial de ediciones</CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
+            <div className="space-y-2 p-6">
+              {campaignMetrics.editHistory.map((edit, index) => (
+                <div key={index} className="flex items-start gap-2">
+                  <History className="h-4 w-4 mt-1 text-gray-500" />
+                  <div>
+                    <p className="text-sm font-medium">{edit.action}</p>
+                    <p className="text-xs text-gray-500">
+                      {edit.user} • {edit.date}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        <div className="flex gap-2">
+          <Button 
+            className="w-full"
+            onClick={handleDuplicate}
+          >
+            <Copy className="h-4 w-4 mr-2" />
+            Duplicar campaña
           </Button>
         </div>
-      )}
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-lg font-medium">{campaign.name}</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div>
-            <p className="text-sm font-medium text-muted-foreground">Audiencia:</p>
-            <p className="text-sm">
-              <NavLink 
-                to={`/audiencias?id=${campaign.audienceId}`} 
-                className="text-audience-purple hover:underline"
-              >
-                {campaign.audienceName}
-              </NavLink>
-            </p>
-          </div>
-          <div>
-            <p className="text-sm font-medium text-muted-foreground">Fecha y hora de envío:</p>
-            <p className="text-sm">{formatDate(campaign.scheduledDate)}</p>
-          </div>
-          
-          {campaign.metrics && (
-            <div className="space-y-2 pt-2">
-              <p className="text-sm font-medium text-muted-foreground">Métricas:</p>
-              <div className="grid grid-cols-3 gap-2">
-                <div className="bg-gray-50 p-2 rounded-md text-center">
-                  <p className="text-lg font-medium">{campaign.metrics.sent}</p>
-                  <p className="text-xs text-muted-foreground">Enviados</p>
-                </div>
-                <div className="bg-gray-50 p-2 rounded-md text-center">
-                  <p className="text-lg font-medium">{campaign.metrics.delivered}</p>
-                  <p className="text-xs text-muted-foreground">Entregados</p>
-                </div>
-                <div className="bg-gray-50 p-2 rounded-md text-center">
-                  <p className="text-lg font-medium">{campaign.metrics.read}</p>
-                  <p className="text-xs text-muted-foreground">Leídos</p>
-                </div>
-              </div>
-            </div>
-          )}
-          
-          <Button className="w-full mt-4" variant="outline">
-            <Eye className="mr-2 h-4 w-4" /> Ver detalles completos
-          </Button>
-        </CardContent>
-      </Card>
+      </div>
     </div>
   );
 };

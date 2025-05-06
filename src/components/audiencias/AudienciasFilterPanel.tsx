@@ -15,6 +15,8 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Button } from '@/components/ui/button';
+import { Plus, X } from 'lucide-react';
 
 interface AudienciasFilterPanelProps {
   onFilterChange: (filters: any) => void;
@@ -194,24 +196,63 @@ const AudienciasFilterPanel: React.FC<AudienciasFilterPanelProps> = ({ onFilterC
     handleFiltersChange();
   };
 
-  const renderFilter = (filterId: string, onRemove: () => void) => {
-    const filter = filterOptions.find(f => f.id === filterId);
-    if (!filter) return null;
-    
-    return <filter.Component onRemove={onRemove} />;
+  // Custom vertical filter rendering for audiencias constructor
+  const renderFilters = () => {
+    return (
+      <div className="space-y-2">
+        {activeFilters.map(filterId => {
+          const filter = filterOptions.find(f => f.id === filterId);
+          if (!filter) return null;
+          
+          return (
+            <div key={filterId} className="w-full">
+              <filter.Component onRemove={() => handleRemoveFilter(filterId)} />
+            </div>
+          );
+        })}
+        
+        {/* Add filter button */}
+        <div className="mt-4">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm">
+                <Plus className="h-4 w-4 mr-1" />
+                Añadir filtro
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start">
+              {filterOptions
+                .filter(filter => !activeFilters.includes(filter.id))
+                .map(filter => (
+                  <DropdownMenuCheckboxItem 
+                    key={filter.id}
+                    onClick={() => handleAddFilter(filter.id)}
+                  >
+                    {filter.label}
+                  </DropdownMenuCheckboxItem>
+                ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+          
+          {activeFilters.length > 1 && (
+            <Button 
+              variant="ghost" 
+              size="sm"
+              className="ml-2"
+              onClick={handleClearFilters}
+            >
+              Limpiar filtros
+            </Button>
+          )}
+        </div>
+      </div>
+    );
   };
 
   return (
     <div className="bg-white p-4 rounded-md border shadow-sm h-fit">
       <h2 className="font-semibold text-lg mb-3">Filtros</h2>
-      <DynamicFilters
-        availableFilters={filterOptions}
-        activeFilters={activeFilters}
-        onAddFilter={handleAddFilter}
-        onRemoveFilter={handleRemoveFilter}
-        onClearFilters={handleClearFilters}
-        renderFilter={renderFilter}
-      />
+      {renderFilters()}
     </div>
   );
 };

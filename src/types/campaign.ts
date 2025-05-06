@@ -12,8 +12,18 @@ export interface Campaign {
     sent: number;
     delivered: number;
     read: number;
+    responses?: number;
+    readRate?: string;
+    responseRate?: string;
   };
   template?: string;
   variables?: Record<string, string>;
   audienceSize?: number;
+  messageText?: string;
+  lastEdited?: string;
+  editHistory?: Array<{
+    date: string;
+    user: string;
+    action: string;
+  }>;
 }
