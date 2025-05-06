@@ -25,6 +25,8 @@ const mockContacts: Contact[] = [
     lastCampaign: '2023-04-15',
     status: 'Activo',
     createdAt: '2022-11-20',
+    audiences: ['Inversores', 'VIP'],
+    responseStatus: 'Leído',
   },
   {
     id: 'cont2',
@@ -37,6 +39,8 @@ const mockContacts: Contact[] = [
     lastCampaign: '2023-03-02',
     status: 'Inactivo',
     createdAt: '2022-09-05',
+    audiences: ['Propietarios'],
+    responseStatus: 'No leído',
   },
 ];
 
@@ -76,7 +80,7 @@ const ContactosIndex = () => {
     toast.success('Contacto eliminado correctamente');
   };
 
-  // Enhanced columns with new data fields
+  // Enhanced columns with all requested data fields
   const columns = [
     {
       id: 'select',
@@ -96,32 +100,74 @@ const ContactosIndex = () => {
     {
       accessorKey: 'name',
       header: 'Nombre',
+      cell: ({ row }: { row: { original: Contact } }) => (
+        <div className="text-sm font-medium">{row.original.name}</div>
+      ),
     },
     {
       accessorKey: 'phone',
       header: 'Teléfono',
+      cell: ({ row }: { row: { original: Contact } }) => (
+        <div className="text-xs">{row.original.phone}</div>
+      ),
     },
     {
       accessorKey: 'age',
       header: 'Edad',
+      cell: ({ row }: { row: { original: Contact } }) => (
+        <div className="text-xs text-center">{row.original.age}</div>
+      ),
     },
     {
       accessorKey: 'properties',
-      header: 'Nº Propiedades',
+      header: 'Nº Prop.',
+      cell: ({ row }: { row: { original: Contact } }) => (
+        <div className="text-xs text-center">{row.original.properties}</div>
+      ),
     },
     {
       accessorKey: 'neighborhood',
       header: 'Barrio',
+      cell: ({ row }: { row: { original: Contact } }) => (
+        <div className="text-xs">{row.original.neighborhood}</div>
+      ),
+    },
+    {
+      accessorKey: 'audiences',
+      header: 'Audiencias',
+      cell: ({ row }: { row: { original: Contact } }) => (
+        <div className="text-xs">
+          {row.original.audiences?.join(', ') || '-'}
+        </div>
+      ),
     },
     {
       accessorKey: 'lastCampaign',
-      header: 'Última campaña',
+      header: 'Últ. campaña',
+      cell: ({ row }: { row: { original: Contact } }) => (
+        <div className="text-xs">{row.original.lastCampaign || '-'}</div>
+      ),
+    },
+    {
+      accessorKey: 'responseStatus',
+      header: 'Estado resp.',
+      cell: ({ row }: { row: { original: Contact } }) => (
+        <div className={`px-1.5 py-0.5 rounded-full text-xs font-medium inline-block
+          ${row.original.responseStatus === 'Leído' 
+            ? 'bg-green-100 text-green-800' 
+            : row.original.responseStatus === 'No leído'
+              ? 'bg-gray-100 text-gray-800'
+              : 'bg-blue-100 text-blue-800'}`}
+        >
+          {row.original.responseStatus || '-'}
+        </div>
+      ),
     },
     {
       accessorKey: 'status',
       header: 'Estado',
       cell: ({ row }: { row: { original: Contact } }) => (
-        <div className={`px-2 py-1 rounded-full text-xs font-medium inline-block
+        <div className={`px-1.5 py-0.5 rounded-full text-xs font-medium inline-block
           ${row.original.status === 'Activo' 
             ? 'bg-green-100 text-green-800' 
             : 'bg-gray-100 text-gray-800'}`}
@@ -139,7 +185,10 @@ const ContactosIndex = () => {
     },
     {
       accessorKey: 'createdAt',
-      header: 'Fecha creación',
+      header: 'Creación',
+      cell: ({ row }: { row: { original: Contact } }) => (
+        <div className="text-xs">{row.original.createdAt || '-'}</div>
+      ),
     },
     {
       id: 'actions',

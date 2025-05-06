@@ -12,6 +12,8 @@ export interface Contact {
   lastCampaign?: string;
   status?: string;
   createdAt?: string;
+  audiences?: string[];
+  responseStatus?: string;
 }
 
 export type AgeRange = '20-35' | '35-50' | '50-70' | '70+';

@@ -7,11 +7,11 @@ interface ContactosTagsProps {
 
 const ContactosTags = ({ tags }: ContactosTagsProps) => {
   return (
-    <div className="flex gap-2 flex-wrap">
+    <div className="flex gap-1 flex-wrap">
       {tags.map((tag) => (
         <span
           key={tag}
-          className="px-2 py-1 text-xs rounded-full bg-audience-lightPurple text-audience-purple"
+          className="px-1.5 py-0.5 text-xs rounded-full bg-audience-lightPurple text-audience-purple"
         >
           {tag}
         </span>
