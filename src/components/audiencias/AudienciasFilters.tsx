@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -71,9 +72,9 @@ const AudienciasFilters: React.FC<AudienciasFiltersProps> = ({
               <SelectValue placeholder="Seleccionar" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="small">Pequeño (<100)</SelectItem>
+              <SelectItem value="small">Pequeño (menos de 100)</SelectItem>
               <SelectItem value="medium">Mediano (100-500)</SelectItem>
-              <SelectItem value="large">Grande (>500)</SelectItem>
+              <SelectItem value="large">Grande (más de 500)</SelectItem>
             </SelectContent>
           </Select>
         </FilterChip>
