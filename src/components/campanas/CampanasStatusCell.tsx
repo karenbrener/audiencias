@@ -1,34 +1,37 @@
 
 import React from 'react';
-import { Campaign } from '@/types/campaign';
-import { Circle, CheckCircle, Clock } from 'lucide-react';
+import { Circle, CheckCircle, Clock, XCircle } from 'lucide-react';
 
 interface CampanasStatusCellProps {
-  campaign: Campaign;
+  status: string;
 }
 
-const CampanasStatusCell: React.FC<CampanasStatusCellProps> = ({ campaign }) => {
+const CampanasStatusCell: React.FC<CampanasStatusCellProps> = ({ status }) => {
   const getStatusIcon = () => {
-    switch (campaign.status) {
+    switch (status) {
       case 'scheduled':
         return <Clock className="h-4 w-4 text-amber-500" />;
       case 'in-progress':
         return <Circle className="h-4 w-4 text-green-500" />;
-      case 'completed':
+      case 'sent':
         return <CheckCircle className="h-4 w-4 text-blue-500" />;
+      case 'canceled':
+        return <XCircle className="h-4 w-4 text-red-500" />;
       default:
         return null;
     }
   };
 
   const getStatusText = () => {
-    switch (campaign.status) {
+    switch (status) {
       case 'scheduled':
         return 'Programada';
       case 'in-progress':
         return 'En curso';
-      case 'completed':
-        return 'Finalizada';
+      case 'sent':
+        return 'Enviada';
+      case 'canceled':
+        return 'Cancelada';
       default:
         return '';
     }

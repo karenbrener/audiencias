@@ -8,13 +8,13 @@ import { toast } from 'sonner';
 
 interface CampanasActionsCellProps {
   campaign: Campaign;
-  onEdit: (campaign: Campaign) => void;
+  onEdit?: (campaign: Campaign) => void;
   onDelete: (campaignId: string) => void;
 }
 
 const CampanasActionsCell: React.FC<CampanasActionsCellProps> = ({
   campaign,
-  onEdit,
+  onEdit = () => toast.info('Editar función no implementada'),
   onDelete,
 }) => {
   const handleClone = () => {

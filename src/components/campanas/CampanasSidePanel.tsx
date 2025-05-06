@@ -4,13 +4,19 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Campaign } from '@/types/campaign';
 import { NavLink } from 'react-router-dom';
-import { Eye } from 'lucide-react';
+import { Eye, X } from 'lucide-react';
 
 interface CampanasSidePanelProps {
   campaign: Campaign | null;
+  isOpen?: boolean;
+  onToggle?: () => void;
 }
 
-const CampanasSidePanel: React.FC<CampanasSidePanelProps> = ({ campaign }) => {
+const CampanasSidePanel: React.FC<CampanasSidePanelProps> = ({ 
+  campaign, 
+  isOpen = true,
+  onToggle = () => {}
+}) => {
   if (!campaign) {
     return (
       <div className="h-full flex items-center justify-center text-muted-foreground p-4">
@@ -32,6 +38,13 @@ const CampanasSidePanel: React.FC<CampanasSidePanelProps> = ({ campaign }) => {
 
   return (
     <div className="p-4 space-y-4">
+      {isOpen && (
+        <div className="flex justify-end mb-2">
+          <Button variant="ghost" size="icon" onClick={onToggle} title="Cerrar panel">
+            <X className="h-4 w-4" />
+          </Button>
+        </div>
+      )}
       <Card>
         <CardHeader className="pb-2">
           <CardTitle className="text-lg font-medium">{campaign.name}</CardTitle>

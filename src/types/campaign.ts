@@ -1,5 +1,5 @@
 
-export type CampaignStatus = 'scheduled' | 'in-progress' | 'completed';
+export type CampaignStatus = 'scheduled' | 'in-progress' | 'completed' | 'sent' | 'canceled';
 
 export interface Campaign {
   id: string;
@@ -15,4 +15,5 @@ export interface Campaign {
   };
   template?: string;
   variables?: Record<string, string>;
+  audienceSize?: number;
 }

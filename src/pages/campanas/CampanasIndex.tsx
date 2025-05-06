@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
@@ -10,6 +9,7 @@ import CampanasActionsCell from '@/components/campanas/CampanasActionsCell';
 import CampanasStatusCell from '@/components/campanas/CampanasStatusCell';
 import CampanasSidePanel from '@/components/campanas/CampanasSidePanel';
 import { Audience } from '@/types/audience';
+import { Campaign } from '@/types/campaign';
 
 // Mock data for campaigns
 const mockCampaigns = [
