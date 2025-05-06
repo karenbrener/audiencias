@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { 
@@ -14,7 +13,7 @@ import {
   CarouselContent,
   CarouselItem,
 } from '@/components/ui/carousel';
-import { useMobile } from '@/hooks/use-mobile';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 export interface FilterOption {
   id: string;
@@ -42,7 +41,8 @@ export function DynamicFilters({
   renderFilter,
   className
 }: DynamicFiltersProps) {
-  const isMobile = useMobile();
+  const isMobile = useIsMobile();
+  
   // Get available filters that are not already active
   const remainingFilters = availableFilters.filter(
     filter => !activeFilters.includes(filter.id)
