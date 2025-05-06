@@ -1,150 +1,141 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
-} from '@/components/ui/select';
-import { DataTable } from '@/components/ui/data-table';
-import { Campaign } from '@/types/campaign';
-import { Audience } from '@/types/audience';
 import { Plus } from 'lucide-react';
-import CampanasStatusCell from '@/components/campanas/CampanasStatusCell';
-import CampanasActionsCell from '@/components/campanas/CampanasActionsCell';
-import CampanasSidePanel from '@/components/campanas/CampanasSidePanel';
-import CreateCampanaModal from '@/components/campanas/CreateCampanaModal';
 import { toast } from 'sonner';
+import { DataTable } from '@/components/ui/data-table';
+import CampanasFilters from '@/components/campanas/CampanasFilters';
+import CreateCampanaModal from '@/components/campanas/CreateCampanaModal';
+import CampanasActionsCell from '@/components/campanas/CampanasActionsCell';
+import CampanasStatusCell from '@/components/campanas/CampanasStatusCell';
+import CampanasSidePanel from '@/components/campanas/CampanasSidePanel';
+import { Audience } from '@/types/audience';
 
-const mockAudiences: Audience[] = [
-  {
-    id: 'aud1',
-    name: 'Propietarios Madrid',
-    size: 450,
-    lastRun: '2023-04-15',
-    status: 'active',
-    filters: {
-      age: ['35-50', '+50'],
-      properties: ['1', '2-5'],
-      neighborhoods: ['Salamanca', 'Chamberí'],
-    },
-  },
-  {
-    id: 'aud2',
-    name: 'Inversores - Alto valor',
-    size: 120,
-    lastRun: '2023-04-10',
-    status: 'active',
-    filters: {
-      age: ['+50', '+70'],
-      properties: ['+5'],
-      neighborhoods: ['Retiro', 'Chamartín'],
-    },
-  },
-  {
-    id: 'aud3',
-    name: 'Compradores potenciales',
-    size: 780,
-    lastRun: '2023-04-05',
-    status: 'archived',
-    filters: {
-      age: ['20-35', '35-50'],
-      properties: ['1'],
-      neighborhoods: ['Tetuán', 'Chamberí'],
-    },
-  },
-];
-
-const mockCampaigns: Campaign[] = [
+// Mock data for campaigns
+const mockCampaigns = [
   {
     id: 'camp1',
-    name: 'Promoción abril 2023',
-    audienceId: 'aud1',
-    audienceName: 'Propietarios Madrid',
-    scheduledDate: '2023-04-28T10:00:00',
+    name: 'Promoción verano',
+    audienceName: 'Propietarios Centro',
+    audienceSize: 1245,
+    scheduledDate: '2025-06-15',
     status: 'scheduled',
+    template: 'promotion',
   },
   {
     id: 'camp2',
-    name: 'Evento exclusivo inversores',
-    audienceId: 'aud2',
-    audienceName: 'Inversores - Alto valor',
-    scheduledDate: '2023-04-20T09:30:00',
-    status: 'in-progress',
-    metrics: {
-      sent: 120,
-      delivered: 118,
-      read: 85
-    }
+    name: 'Seguimiento inversores',
+    audienceName: 'Inversores Premium',
+    audienceSize: 857,
+    scheduledDate: '2025-06-05',
+    status: 'sent',
+    template: 'followup',
   },
   {
     id: 'camp3',
-    name: 'Promoción marzo 2023',
-    audienceId: 'aud1',
-    audienceName: 'Propietarios Madrid',
-    scheduledDate: '2023-03-15T14:00:00',
-    status: 'completed',
-    metrics: {
-      sent: 450,
-      delivered: 442,
-      read: 375
-    }
-  }
+    name: 'Nuevas propiedades',
+    audienceName: 'Compradores 2024',
+    audienceSize: 2140,
+    scheduledDate: '2025-05-10',
+    status: 'sent',
+    template: 'new_properties',
+  },
+  {
+    id: 'camp4',
+    name: 'Recordatorio evento',
+    audienceName: 'Vendedores potenciales',
+    audienceSize: 412,
+    scheduledDate: '2025-06-10',
+    status: 'scheduled',
+    template: 'reminder',
+  },
+  {
+    id: 'camp5',
+    name: 'Descuentos especiales',
+    audienceName: 'Clientes antiguos',
+    audienceSize: 1589,
+    scheduledDate: '2025-05-01',
+    status: 'canceled',
+    template: 'promotion',
+  },
+];
+
+// Mock data for audiences
+const mockAudiences: Audience[] = [
+  { id: '1', name: 'Propietarios Centro', size: 1245, lastRun: '2025-04-25', status: 'active' },
+  { id: '2', name: 'Inversores Premium', size: 857, lastRun: '2025-04-22', status: 'active' },
+  { id: '3', name: 'Compradores 2024', size: 2140, lastRun: '2025-04-15', status: 'active' },
+  { id: '4', name: 'Vendedores potenciales', size: 412, lastRun: '2025-04-10', status: 'active' },
+  { id: '5', name: 'Clientes antiguos', size: 1589, lastRun: '2025-03-30', status: 'archived' },
 ];
 
 const CampanasIndex = () => {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState<string>('');
-  const [audienceFilter, setAudienceFilter] = useState<string>('');
-  const [campaigns, setCampaigns] = useState<Campaign[]>(mockCampaigns);
-  const [selectedCampaign, setSelectedCampaign] = useState<Campaign | null>(null);
+  const [campaigns, setCampaigns] = useState(mockCampaigns);
+  const [filteredCampaigns, setFilteredCampaigns] = useState(mockCampaigns);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('todas');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  
-  const handleSelectCampaign = (campaign: Campaign) => {
-    setSelectedCampaign(prev => prev?.id === campaign.id ? null : campaign);
-  };
-  
-  const handleEditCampaign = (campaign: Campaign) => {
-    toast.info(`Editando campaña: ${campaign.name}`);
-  };
-  
-  const handleDeleteCampaign = (campaignId: string) => {
-    toast.success('Campaña eliminada correctamente');
-    setCampaigns(campaigns.filter(c => c.id !== campaignId));
-    if (selectedCampaign?.id === campaignId) {
-      setSelectedCampaign(null);
+  const [selectedCampaign, setSelectedCampaign] = useState(null);
+  const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);
+
+  // Filter campaigns based on search term and status
+  React.useEffect(() => {
+    let filtered = [...campaigns];
+    
+    // Apply status filter
+    if (statusFilter !== 'todas') {
+      const statusMap: Record<string, string> = {
+        'programadas': 'scheduled',
+        'enviadas': 'sent',
+        'canceladas': 'canceled',
+      };
+      filtered = filtered.filter(campaign => campaign.status === statusMap[statusFilter]);
     }
-  };
-  
-  const handleSaveCampaign = (name: string, audienceId: string, template: string, date: string) => {
-    const audience = mockAudiences.find(a => a.id === audienceId);
-    const newCampaign: Campaign = {
+    
+    // Apply search filter
+    if (searchTerm) {
+      filtered = filtered.filter(campaign => 
+        campaign.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+        campaign.audienceName.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+    
+    setFilteredCampaigns(filtered);
+  }, [searchTerm, statusFilter, campaigns]);
+
+  const handleCreateCampaign = (name: string, audienceId: string, template: string, date: string) => {
+    const selectedAudience = mockAudiences.find(aud => aud.id === audienceId);
+    
+    const newCampaign = {
       id: `camp${campaigns.length + 1}`,
       name,
-      audienceId,
-      audienceName: audience?.name || '',
+      audienceName: selectedAudience?.name || '',
+      audienceSize: selectedAudience?.size || 0,
       scheduledDate: date,
       status: 'scheduled',
+      template,
     };
     
     setCampaigns([...campaigns, newCampaign]);
     setIsCreateModalOpen(false);
-    toast.success(`Campaña "${name}" creada correctamente`);
+    toast.success('Campaña creada correctamente');
   };
-  
-  const filteredCampaigns = campaigns.filter(campaign => {
-    const matchesSearch = campaign.name
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase());
-      
-    const matchesStatus = statusFilter ? campaign.status === statusFilter : true;
-    const matchesAudience = audienceFilter ? campaign.audienceId === audienceFilter : true;
+
+  const handleRowClick = (campaign: any) => {
+    setSelectedCampaign(campaign);
+    setIsSidePanelOpen(true);
+  };
+
+  const handleDeleteCampaign = (campaignId: string) => {
+    setCampaigns(campaigns.filter(camp => camp.id !== campaignId));
+    toast.success('Campaña eliminada correctamente');
     
-    return matchesSearch && matchesStatus && matchesAudience;
-  });
-  
+    if (selectedCampaign && selectedCampaign.id === campaignId) {
+      setSelectedCampaign(null);
+      setIsSidePanelOpen(false);
+    }
+  };
+
   const columns = [
     {
       accessorKey: 'name',
@@ -155,110 +146,70 @@ const CampanasIndex = () => {
       header: 'Audiencia',
     },
     {
+      accessorKey: 'audienceSize',
+      header: 'Nº Contactos',
+    },
+    {
       accessorKey: 'scheduledDate',
-      header: 'Fecha Programada',
-      cell: ({ row }: { row: { original: Campaign } }) => {
-        const options: Intl.DateTimeFormatOptions = { 
-          day: '2-digit', 
-          month: 'short', 
-          year: 'numeric',
-          hour: '2-digit',
-          minute: '2-digit'
-        };
-        return new Date(row.original.scheduledDate).toLocaleDateString('es-ES', options);
-      },
+      header: 'Fecha programada',
     },
     {
       accessorKey: 'status',
       header: 'Estado',
-      cell: ({ row }: { row: { original: Campaign } }) => (
-        <CampanasStatusCell campaign={row.original} />
+      cell: ({ row }: { row: { original: any } }) => (
+        <CampanasStatusCell status={row.original.status} />
       ),
     },
     {
       accessorKey: 'actions',
       header: 'Acciones',
-      cell: ({ row }: { row: { original: Campaign } }) => (
+      cell: ({ row }: { row: { original: any } }) => (
         <CampanasActionsCell 
-          campaign={row.original} 
-          onEdit={handleEditCampaign} 
+          campaign={row.original}
           onDelete={handleDeleteCampaign}
         />
       ),
     },
   ];
-  
+
   return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Campañas</h1>
-        <Button onClick={() => setIsCreateModalOpen(true)}>
-          <Plus className="h-4 w-4 mr-2" />
-          Nueva Campaña
-        </Button>
-      </div>
-      
-      <div className="bg-white p-4 rounded-md shadow-sm mb-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div>
-            <Select value={audienceFilter} onValueChange={setAudienceFilter}>
-              <SelectTrigger>
-                <SelectValue placeholder="Audiencia" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todas las audiencias</SelectItem>
-                {mockAudiences.map(audience => (
-                  <SelectItem key={audience.id} value={audience.id}>
-                    {audience.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          
-          <div>
-            <Input
-              placeholder="Buscar campañas..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
-          
-          <div>
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger>
-                <SelectValue placeholder="Estado" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todos los estados</SelectItem>
-                <SelectItem value="scheduled">Programadas</SelectItem>
-                <SelectItem value="in-progress">En curso</SelectItem>
-                <SelectItem value="completed">Finalizadas</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+    <div className="flex h-full">
+      <div className="flex-1 p-6 overflow-auto">
+        <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <h1 className="text-2xl font-bold text-gray-900">Campañas</h1>
+          <Button onClick={() => setIsCreateModalOpen(true)} className="shrink-0">
+            <Plus className="h-4 w-4 mr-2" />
+            Nueva Campaña
+          </Button>
         </div>
-      </div>
-      
-      <div className="flex flex-col md:flex-row gap-4">
-        <div className="w-full md:w-2/3">
-          <DataTable
-            columns={columns}
+
+        <div className="bg-white p-4 rounded-md shadow-sm mb-6">
+          <CampanasFilters 
+            onSearchChange={setSearchTerm}
+            onStatusChange={setStatusFilter}
+          />
+        </div>
+
+        <div>
+          <DataTable 
+            columns={columns} 
             data={filteredCampaigns}
-            onRowClick={handleSelectCampaign}
+            onRowClick={handleRowClick}
             selectedRow={selectedCampaign}
           />
         </div>
-        
-        <div className="w-full md:w-1/3 bg-white rounded-md shadow-sm">
-          <CampanasSidePanel campaign={selectedCampaign} />
-        </div>
       </div>
+      
+      <CampanasSidePanel 
+        campaign={selectedCampaign}
+        isOpen={isSidePanelOpen}
+        onToggle={() => setIsSidePanelOpen(!isSidePanelOpen)}
+      />
       
       <CreateCampanaModal
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
-        onSave={handleSaveCampaign}
+        onSave={handleCreateCampaign}
         audiences={mockAudiences}
       />
     </div>

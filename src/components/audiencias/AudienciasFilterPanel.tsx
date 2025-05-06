@@ -1,219 +1,218 @@
 
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
-import { 
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-} from '@/components/ui/command';
-import { 
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
-import { Separator } from '@/components/ui/separator';
-import { Check, ChevronsUpDown } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { DynamicFilters, FilterChip, FilterOption } from '@/components/ui/dynamic-filters';
+import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 interface AudienciasFilterPanelProps {
   onFilterChange: (filters: any) => void;
 }
 
-// Mock data for neighborhoods
-const neighborhoods = [
-  { label: "Salamanca", value: "salamanca" },
-  { label: "Chamberí", value: "chamberi" },
-  { label: "Retiro", value: "retiro" },
-  { label: "Centro", value: "centro" },
-  { label: "Chamartín", value: "chamartin" },
-  { label: "Tetuán", value: "tetuan" },
-  { label: "Arganzuela", value: "arganzuela" },
-];
-
 const AudienciasFilterPanel: React.FC<AudienciasFilterPanelProps> = ({ onFilterChange }) => {
-  const [ageFilters, setAgeFilters] = useState<string[]>([]);
-  const [propertyFilters, setPropertyFilters] = useState<string[]>([]);
+  const [activeFilters, setActiveFilters] = useState<string[]>(['search']);
+  const [searchValue, setSearchValue] = useState('');
+  const [selectedAgeRanges, setSelectedAgeRanges] = useState<string[]>([]);
+  const [selectedPropertyRanges, setSelectedPropertyRanges] = useState<string[]>([]);
   const [selectedNeighborhoods, setSelectedNeighborhoods] = useState<string[]>([]);
-  const [open, setOpen] = useState(false);
 
-  const handleAgeFilterChange = (value: string) => {
-    setAgeFilters(prev => {
-      const newFilters = prev.includes(value)
-        ? prev.filter(filter => filter !== value)
-        : [...prev, value];
-      
-      onFilterChange({ ageFilters: newFilters, propertyFilters, selectedNeighborhoods });
-      return newFilters;
+  // Define age ranges, property ranges, and neighborhoods
+  const ageRanges = ['20-35', '35-50', '50-70', '70+'];
+  const propertyRanges = ['1', '2-5', '5+'];
+  const neighborhoods = ['Salamanca', 'Chamberí', 'Retiro', 'Chamartín', 'Tetuán'];
+
+  // Define all available filter options
+  const filterOptions: FilterOption[] = [
+    {
+      id: 'search',
+      label: 'Buscar',
+      type: 'text',
+      Component: ({ onRemove }) => (
+        <FilterChip label="Buscar" onRemove={onRemove}>
+          <Input
+            placeholder="Buscar contactos..."
+            className="border-0 p-0 h-6 focus-visible:ring-0 bg-transparent"
+            value={searchValue}
+            onChange={(e) => {
+              setSearchValue(e.target.value);
+              handleFiltersChange();
+            }}
+          />
+        </FilterChip>
+      )
+    },
+    {
+      id: 'age',
+      label: 'Edad',
+      type: 'multiSelect',
+      Component: ({ onRemove }) => (
+        <FilterChip label="Edad" onRemove={onRemove}>
+          <DropdownMenu>
+            <DropdownMenuTrigger className="border-0 p-0 h-6 focus-visible:ring-0 bg-transparent text-left text-sm">
+              {selectedAgeRanges.length 
+                ? `${selectedAgeRanges.length} seleccionados` 
+                : "Seleccionar edades"}
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              {ageRanges.map(range => (
+                <DropdownMenuCheckboxItem
+                  key={range}
+                  checked={selectedAgeRanges.includes(range)}
+                  onCheckedChange={(checked) => {
+                    setSelectedAgeRanges(prev =>
+                      checked
+                        ? [...prev, range]
+                        : prev.filter(r => r !== range)
+                    );
+                    handleFiltersChange();
+                  }}
+                >
+                  {range}
+                </DropdownMenuCheckboxItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </FilterChip>
+      )
+    },
+    {
+      id: 'properties',
+      label: 'Nº Propiedades',
+      type: 'multiSelect',
+      Component: ({ onRemove }) => (
+        <FilterChip label="Propiedades" onRemove={onRemove}>
+          <DropdownMenu>
+            <DropdownMenuTrigger className="border-0 p-0 h-6 focus-visible:ring-0 bg-transparent text-left text-sm">
+              {selectedPropertyRanges.length 
+                ? `${selectedPropertyRanges.length} seleccionados` 
+                : "Seleccionar rango"}
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              {propertyRanges.map(range => (
+                <DropdownMenuCheckboxItem
+                  key={range}
+                  checked={selectedPropertyRanges.includes(range)}
+                  onCheckedChange={(checked) => {
+                    setSelectedPropertyRanges(prev =>
+                      checked
+                        ? [...prev, range]
+                        : prev.filter(r => r !== range)
+                    );
+                    handleFiltersChange();
+                  }}
+                >
+                  {range}
+                </DropdownMenuCheckboxItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </FilterChip>
+      )
+    },
+    {
+      id: 'neighborhoods',
+      label: 'Barrios',
+      type: 'multiSelect',
+      Component: ({ onRemove }) => (
+        <FilterChip label="Barrios" onRemove={onRemove}>
+          <DropdownMenu>
+            <DropdownMenuTrigger className="border-0 p-0 h-6 focus-visible:ring-0 bg-transparent text-left text-sm">
+              {selectedNeighborhoods.length 
+                ? `${selectedNeighborhoods.length} seleccionados` 
+                : "Seleccionar barrios"}
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              {neighborhoods.map(neighborhood => (
+                <DropdownMenuCheckboxItem
+                  key={neighborhood}
+                  checked={selectedNeighborhoods.includes(neighborhood)}
+                  onCheckedChange={(checked) => {
+                    setSelectedNeighborhoods(prev =>
+                      checked
+                        ? [...prev, neighborhood]
+                        : prev.filter(n => n !== neighborhood)
+                    );
+                    handleFiltersChange();
+                  }}
+                >
+                  {neighborhood}
+                </DropdownMenuCheckboxItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </FilterChip>
+      )
+    }
+  ];
+
+  const handleFiltersChange = () => {
+    onFilterChange({
+      search: searchValue,
+      age: selectedAgeRanges,
+      properties: selectedPropertyRanges,
+      neighborhoods: selectedNeighborhoods
     });
   };
 
-  const handlePropertyFilterChange = (value: string) => {
-    setPropertyFilters(prev => {
-      const newFilters = prev.includes(value)
-        ? prev.filter(filter => filter !== value)
-        : [...prev, value];
-      
-      onFilterChange({ ageFilters, propertyFilters: newFilters, selectedNeighborhoods });
-      return newFilters;
-    });
+  const handleAddFilter = (filterId: string) => {
+    setActiveFilters((prev) => [...prev, filterId]);
   };
 
-  const toggleNeighborhood = (value: string) => {
-    setSelectedNeighborhoods(prev => {
-      const newSelected = prev.includes(value)
-        ? prev.filter(item => item !== value)
-        : [...prev, value];
-      
-      onFilterChange({ ageFilters, propertyFilters, selectedNeighborhoods: newSelected });
-      return newSelected;
-    });
+  const handleRemoveFilter = (filterId: string) => {
+    setActiveFilters((prev) => prev.filter(id => id !== filterId));
+    
+    if (filterId === 'search') {
+      setSearchValue('');
+    } else if (filterId === 'age') {
+      setSelectedAgeRanges([]);
+    } else if (filterId === 'properties') {
+      setSelectedPropertyRanges([]);
+    } else if (filterId === 'neighborhoods') {
+      setSelectedNeighborhoods([]);
+    }
+    
+    handleFiltersChange();
   };
 
-  const clearFilters = () => {
-    setAgeFilters([]);
-    setPropertyFilters([]);
+  const handleClearFilters = () => {
+    setActiveFilters(['search']);
+    setSearchValue('');
+    setSelectedAgeRanges([]);
+    setSelectedPropertyRanges([]);
     setSelectedNeighborhoods([]);
-    onFilterChange({ ageFilters: [], propertyFilters: [], selectedNeighborhoods: [] });
+    handleFiltersChange();
+  };
+
+  const renderFilter = (filterId: string, onRemove: () => void) => {
+    const filter = filterOptions.find(f => f.id === filterId);
+    if (!filter) return null;
+    
+    return <filter.Component onRemove={onRemove} />;
   };
 
   return (
-    <Card className="h-full">
-      <CardHeader className="pb-3">
-        <CardTitle className="text-lg font-semibold">Filtros</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-6">
-          <div>
-            <h3 className="font-medium text-sm mb-2">Edad</h3>
-            <div className="space-y-2">
-              {[
-                { id: '20-35', label: '20-35 años' },
-                { id: '35-50', label: '35-50 años' },
-                { id: '50-70', label: '50-70 años' },
-                { id: '70plus', label: '+70 años' }
-              ].map((item) => (
-                <div key={item.id} className="flex items-center space-x-2">
-                  <Checkbox 
-                    id={`age-${item.id}`} 
-                    checked={ageFilters.includes(item.id)}
-                    onCheckedChange={() => handleAgeFilterChange(item.id)}
-                  />
-                  <Label htmlFor={`age-${item.id}`}>{item.label}</Label>
-                </div>
-              ))}
-            </div>
-          </div>
-          
-          <Separator />
-          
-          <div>
-            <h3 className="font-medium text-sm mb-2">Número de propiedades</h3>
-            <div className="space-y-2">
-              {[
-                { id: '1', label: '1 propiedad' },
-                { id: '2-5', label: '2-5 propiedades' },
-                { id: '5plus', label: '+5 propiedades' }
-              ].map((item) => (
-                <div key={item.id} className="flex items-center space-x-2">
-                  <Checkbox 
-                    id={`property-${item.id}`} 
-                    checked={propertyFilters.includes(item.id)}
-                    onCheckedChange={() => handlePropertyFilterChange(item.id)}
-                  />
-                  <Label htmlFor={`property-${item.id}`}>{item.label}</Label>
-                </div>
-              ))}
-            </div>
-          </div>
-          
-          <Separator />
-          
-          <div>
-            <h3 className="font-medium text-sm mb-2">Barrios</h3>
-            <Popover open={open} onOpenChange={setOpen}>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  role="combobox"
-                  aria-expanded={open}
-                  className="w-full justify-between"
-                >
-                  {selectedNeighborhoods.length > 0
-                    ? `${selectedNeighborhoods.length} barrios seleccionados`
-                    : "Seleccionar barrios"}
-                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-[200px] p-0" align="start">
-                <Command>
-                  <CommandInput placeholder="Buscar barrio..." />
-                  <CommandEmpty>No se encontraron barrios.</CommandEmpty>
-                  <CommandGroup className="max-h-[200px] overflow-auto">
-                    {neighborhoods.map((neighborhood) => (
-                      <CommandItem
-                        key={neighborhood.value}
-                        value={neighborhood.value}
-                        onSelect={() => toggleNeighborhood(neighborhood.value)}
-                      >
-                        <Check
-                          className={cn(
-                            "mr-2 h-4 w-4",
-                            selectedNeighborhoods.includes(neighborhood.value)
-                              ? "opacity-100"
-                              : "opacity-0"
-                          )}
-                        />
-                        {neighborhood.label}
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
-                </Command>
-              </PopoverContent>
-            </Popover>
-            
-            {selectedNeighborhoods.length > 0 && (
-              <div className="mt-2 flex flex-wrap gap-1">
-                {selectedNeighborhoods.map((neighborhood) => {
-                  const label = neighborhoods.find(n => n.value === neighborhood)?.label;
-                  return (
-                    <Badge 
-                      key={neighborhood} 
-                      variant="secondary"
-                      className="flex items-center gap-1"
-                    >
-                      {label}
-                      <button 
-                        className="ml-1 h-3 w-3 rounded-full bg-gray-400 text-white flex items-center justify-center text-[10px] hover:bg-gray-500"
-                        onClick={() => toggleNeighborhood(neighborhood)}
-                      >
-                        ×
-                      </button>
-                    </Badge>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-          
-          <Separator />
-          
-          <Button 
-            variant="outline" 
-            size="sm" 
-            className="w-full"
-            onClick={clearFilters}
-          >
-            Limpiar filtros
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
+    <div className="bg-white p-4 rounded-md border shadow-sm h-fit">
+      <h2 className="font-semibold text-lg mb-3">Filtros</h2>
+      <DynamicFilters
+        availableFilters={filterOptions}
+        activeFilters={activeFilters}
+        onAddFilter={handleAddFilter}
+        onRemoveFilter={handleRemoveFilter}
+        onClearFilters={handleClearFilters}
+        renderFilter={renderFilter}
+      />
+    </div>
   );
 };
 
